@@ -50,43 +50,43 @@ impl AutoSplitterState {
         match new_state {
             TimerState::NotRunning => {
                 self.events += "3";
-                asr::timer::set_variable("events", &self.events);
+                asr::timer::set_variable("events", str_take_right(&self.events, 10));
                 asr::timer::set_variable("last", "Reset");
             }
             TimerState::Running if is_timer_state_between_runs(self.timer_state) => {
                 self.events += "1";
-                asr::timer::set_variable("events", &self.events);
+                asr::timer::set_variable("events", str_take_right(&self.events, 10));
                 asr::timer::set_variable("last", "Start");
             }
             TimerState::Paused if self.timer_state == TimerState::Running => {
                 self.events += "5";
-                asr::timer::set_variable("events", &self.events);
+                asr::timer::set_variable("events", str_take_right(&self.events, 10));
                 asr::timer::set_variable("last", "Pause");
             }
             TimerState::Running if self.timer_state == TimerState::Paused => {
                 self.events += "5";
-                asr::timer::set_variable("events", &self.events);
+                asr::timer::set_variable("events", str_take_right(&self.events, 10));
                 asr::timer::set_variable("last", "Resume");
             }
             TimerState::Ended => {
                 self.events += "1";
-                asr::timer::set_variable("events", &self.events);
+                asr::timer::set_variable("events", str_take_right(&self.events, 10));
                 asr::timer::set_variable("last", "End");
             }
             _ => {
                 if let (Some(new_segments), Some(old_segments)) = (new_segments, &self.segments_splitted) {
                     if new_segments.len() < old_segments.len() {
                         self.events += "8";
-                        asr::timer::set_variable("events", &self.events);
+                        asr::timer::set_variable("events", str_take_right(&self.events, 10));
                         asr::timer::set_variable("last", "Undo");
                     } else if new_segments.len() > old_segments.len() {
                         if new_segments[new_segments.len() - 1] {
                             self.events += "1";
-                            asr::timer::set_variable("events", &self.events);
+                            asr::timer::set_variable("events", str_take_right(&self.events, 10));
                             asr::timer::set_variable("last", "Split");
                         } else {
                             self.events += "2";
-                            asr::timer::set_variable("events", &self.events);
+                            asr::timer::set_variable("events", str_take_right(&self.events, 10));
                             asr::timer::set_variable("last", "Skip");
                         }
                     }
@@ -147,4 +147,8 @@ async fn wait_attach_silksong(
 
 pub fn is_timer_state_between_runs(s: TimerState) -> bool {
     s == TimerState::NotRunning || s == TimerState::Ended
+}
+
+pub fn str_take_right(s: &str, n: usize) -> &str {
+    s.split_at(s.len().saturating_sub(n)).1
 }
