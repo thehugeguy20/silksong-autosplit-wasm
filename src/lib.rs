@@ -4,7 +4,15 @@ extern crate alloc;
 #[global_allocator]
 static ALLOC: dlmalloc::GlobalDlmalloc = dlmalloc::GlobalDlmalloc;
 
-use asr::{future::next_tick, settings::Gui, Process};
+mod silksong_memory;
+
+use asr::{
+    future::{next_tick, retry},
+    settings::Gui,
+    Process,
+};
+
+use crate::silksong_memory::attach_silksong;
 
 asr::async_main!(stable);
 asr::panic_handler!();
@@ -26,7 +34,7 @@ async fn main() {
     loop {
         // TODO: replace this placeholder with the actual executables
         // for each operating system / platform once the game releases.
-        let process = Process::wait_attach("silksong.exe").await;
+        let process = wait_attach_silksong(&mut settings).await;
         process
             .until_closes(async {
                 // TODO: Load some initial information from the process.
@@ -39,4 +47,14 @@ async fn main() {
             })
             .await;
     }
+}
+
+async fn wait_attach_silksong(
+    gui: &mut Settings,
+) -> Process {
+    retry(|| {
+        gui.update();
+        attach_silksong()
+    })
+    .await
 }
