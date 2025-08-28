@@ -28,14 +28,17 @@ jobs:
         run: |
           cargo b --release --locked
 
+      - name: Prepare Release
+        run: |
+          cp target/wasm32-unknown-unknown/release/silksong_autosplit_wasm.wasm silksong_autosplit_wasm.wasm
+          ls -lh silksong_autosplit_wasm.wasm
+
       - name: Release
-        if: github.ref == 'refs/heads/master'
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: target/wasm32-unknown-unknown/release/silksong_autosplit_wasm.wasm
-          name: Latest
-          tag_name: latest
-          body: This contains the latest version of the auto splitter.
+          generate_release_notes: true
+          files: silksong_autosplit_wasm.wasm
 
   clippy:
     name: Check clippy lints
