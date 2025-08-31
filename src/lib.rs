@@ -7,10 +7,7 @@ static ALLOC: dlmalloc::GlobalDlmalloc = dlmalloc::GlobalDlmalloc;
 mod silksong_memory;
 mod unstable;
 
-use alloc::{
-    string::{String, ToString},
-    vec::Vec,
-};
+use alloc::string::{String, ToString};
 use asr::{
     future::{next_tick, retry},
     settings::Gui,
@@ -25,25 +22,25 @@ asr::panic_handler!();
 
 struct AutoSplitterState {
     timer_state: TimerState,
-    segments_splitted: Option<Vec<bool>>,
+    split_index: Option<i32>,
     events: String,
 }
 
 impl AutoSplitterState {
     fn new() -> AutoSplitterState {
         let timer_state = asr::timer::state();
-        let segments_splitted = unstable::maybe_timer_current_attempt_segments_splitted();
+        let split_index = unstable::maybe_timer_current_split_index();
         AutoSplitterState {
             timer_state,
-            segments_splitted,
+            split_index,
             events: "".to_string(),
         }
     }
 
     fn update(&mut self) {
         let new_state = asr::timer::state();
-        let new_segments = unstable::maybe_timer_current_attempt_segments_splitted();
-        if new_state == self.timer_state && new_segments == self.segments_splitted {
+        let new_index = unstable::maybe_timer_current_split_index();
+        if new_state == self.timer_state && new_index == self.split_index {
             return;
         }
 
@@ -79,14 +76,14 @@ impl AutoSplitterState {
                 asr::print_message("Ended.");
             }
             _ => {
-                if let (Some(new_segments), Some(old_segments)) = (&new_segments, &self.segments_splitted) {
-                    if new_segments.len() < old_segments.len() {
+                if let (Some(new_index), Some(old_index)) = (&new_index, &self.split_index) {
+                    if new_index < old_index {
                         self.events += "8";
                         asr::timer::set_variable("events", str_take_right(&self.events, 10));
                         asr::timer::set_variable("last", "Undo");
                         asr::print_message("Undid.");
-                    } else if new_segments.len() > old_segments.len() {
-                        if new_segments[new_segments.len() - 1] {
+                    } else if new_index > old_index {
+                        if unstable::maybe_timer_segment_splitted(new_index - 1).unwrap_or_default() {
                             self.events += "1";
                             asr::timer::set_variable("events", str_take_right(&self.events, 10));
                             asr::timer::set_variable("last", "Split");
@@ -103,7 +100,7 @@ impl AutoSplitterState {
         }
 
         self.timer_state = new_state;
-        self.segments_splitted = new_segments;
+        self.split_index = new_index;
     }
 }
 
