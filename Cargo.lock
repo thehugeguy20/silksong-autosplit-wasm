@@ -11,7 +11,7 @@ checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
 [[package]]
 name = "asr"
 version = "0.1.0"
-source = "git+https://github.com/AlexKnauth/asr?branch=mono-4-split-index-segments-splitted-3#b8de0dfbdc68e85ed32abb41b2bdca4e006c29b8"
+source = "git+https://github.com/AlexKnauth/asr?branch=segment-splitted-3#886e8a323b80ee9e51a9c5a5d320d533fdf9b0db"
 dependencies = [
  "arrayvec",
  "asr-derive",
@@ -25,7 +25,7 @@ dependencies = [
 [[package]]
 name = "asr-derive"
 version = "0.1.0"
-source = "git+https://github.com/AlexKnauth/asr?branch=mono-4-split-index-segments-splitted-3#b8de0dfbdc68e85ed32abb41b2bdca4e006c29b8"
+source = "git+https://github.com/AlexKnauth/asr?branch=segment-splitted-3#886e8a323b80ee9e51a9c5a5d320d533fdf9b0db"
 dependencies = [
  "heck",
  "proc-macro2",

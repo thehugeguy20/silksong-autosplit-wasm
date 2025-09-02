@@ -5,7 +5,6 @@ extern crate alloc;
 static ALLOC: dlmalloc::GlobalDlmalloc = dlmalloc::GlobalDlmalloc;
 
 mod silksong_memory;
-mod unstable;
 
 use alloc::string::{String, ToString};
 use asr::{
@@ -22,14 +21,14 @@ asr::panic_handler!();
 
 struct AutoSplitterState {
     timer_state: TimerState,
-    split_index: Option<i32>,
+    split_index: Option<u64>,
     events: String,
 }
 
 impl AutoSplitterState {
     fn new() -> AutoSplitterState {
         let timer_state = asr::timer::state();
-        let split_index = unstable::maybe_timer_current_split_index();
+        let split_index = asr::timer::current_split_index();
         AutoSplitterState {
             timer_state,
             split_index,
@@ -39,7 +38,7 @@ impl AutoSplitterState {
 
     fn update(&mut self) {
         let new_state = asr::timer::state();
-        let new_index = unstable::maybe_timer_current_split_index();
+        let new_index = asr::timer::current_split_index();
         if new_state == self.timer_state && new_index == self.split_index {
             return;
         }
@@ -83,7 +82,7 @@ impl AutoSplitterState {
                         asr::timer::set_variable("last", "Undo");
                         asr::print_message("Undid.");
                     } else if new_index > old_index {
-                        if unstable::maybe_timer_segment_splitted(new_index - 1).unwrap_or_default() {
+                        if asr::timer::segment_splitted(new_index - 1).unwrap_or_default() {
                             self.events += "1";
                             asr::timer::set_variable("events", str_take_right(&self.events, 10));
                             asr::timer::set_variable("last", "Split");
