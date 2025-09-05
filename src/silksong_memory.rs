@@ -2,14 +2,9 @@ use asr::Process;
 
 // --------------------------------------------------------
 
-// TODO: replace these placeholders with the actual executables
-// for each operating system / platform once the game releases.
-static SILKSONG_NAMES: [&str; 5] = [
-    "silksong.exe",    // Windows
-    "silksong.x86_64", // Linux
-    "Silksong.exe",    // Linux GOG?
-    "Silksong",        // Mac
-    "silksong",        // Mac
+static SILKSONG_NAMES: [&str; 2] = [
+    "Hollow Knight Silksong.exe", // Windows
+    "Hollow Knight Silksong",     // Mac, Linux
 ];
 
 // --------------------------------------------------------
