@@ -5,7 +5,7 @@ extern crate alloc;
 static ALLOC: dlmalloc::GlobalDlmalloc = dlmalloc::GlobalDlmalloc;
 
 mod silksong_memory;
-mod splits;
+pub mod splits;
 mod timer;
 mod unstable;
 

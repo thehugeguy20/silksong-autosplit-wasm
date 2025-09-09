@@ -1,0 +1,27 @@
+[
+  {
+    "description": "Manual Split (Misc)",
+    "key": "ManualSplit",
+    "tooltip": "Never splits. Use this when you need to manually split"
+  },
+  {
+    "description": "Start New Game (Start)",
+    "key": "StartNewGame",
+    "tooltip": "Splits when starting a new save file"
+  },
+  {
+    "description": "Main Menu (Menu)",
+    "key": "Menu",
+    "tooltip": "Splits on the main menu"
+  },
+  {
+    "description": "Death (Event)",
+    "key": "PlayerDeath",
+    "tooltip": "Splits when player HP is 0"
+  },
+  {
+    "description": "Any Transition (Transition)",
+    "key": "AnyTransition",
+    "tooltip": "Splits when entering a transition (only one will split per transition)"
+  }
+]
