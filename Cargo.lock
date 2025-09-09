@@ -140,6 +140,8 @@ dependencies = [
  "asr",
  "bytemuck",
  "dlmalloc",
+ "ugly_widget",
+ "ugly_widget_derive",
 ]
 
 [[package]]
@@ -170,6 +172,24 @@ name = "time-core"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c9e9a38711f559d9e3ce1cdb06dd7c5b8ea546bc90052da6d06bb76da74bb07c"
+
+[[package]]
+name = "ugly_widget"
+version = "0.1.0"
+source = "git+https://github.com/AlexKnauth/hollowknight-autosplit-wasm#ee787e2a8821bd8415d144036216f8e649f1988d"
+dependencies = [
+ "asr",
+ "ugly_widget_derive",
+]
+
+[[package]]
+name = "ugly_widget_derive"
+version = "0.1.0"
+source = "git+https://github.com/AlexKnauth/hollowknight-autosplit-wasm#ee787e2a8821bd8415d144036216f8e649f1988d"
+dependencies = [
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "unicode-ident"

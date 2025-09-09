@@ -1,7 +1,15 @@
-use alloc::{boxed::Box, string::String, vec::Vec};
+use core::mem;
+
+use alloc::{
+    boxed::Box,
+    format,
+    string::{String, ToString},
+    vec::Vec,
+};
 use asr::{
     future::next_tick,
     game_engine::unity::mono::{self, UnityPointer},
+    watcher::Pair,
     Address64, Process,
 };
 use bytemuck::CheckedBitPattern;
@@ -17,9 +25,12 @@ static SILKSONG_NAMES: [&str; 2] = [
 pub const MENU_TITLE: &str = "Menu_Title";
 pub const QUIT_TO_MENU: &str = "Quit_To_Menu";
 
-// static NON_PLAY_SCENES: [&str; 3] = [PRE_MENU_INTRO, MENU_TITLE, QUIT_TO_MENU];
+pub const INTRO_CUTSCENE: &str = "Intro_Cutscene";
+pub const OPENING_SEQUENCE: &str = "Opening_Sequence";
+pub static OPENING_SCENES: [&str; 2] = [INTRO_CUTSCENE, OPENING_SEQUENCE];
 
-/*
+// static NON_PLAY_SCENES: [&str; 5] = [PRE_MENU_INTRO, MENU_TITLE, QUIT_TO_MENU, INTRO_CUTSCENE, OPENING_SEQUENCE];
+
 static BAD_SCENE_NAMES: [&str; 11] = [
     "Untagged",
     "left1",
@@ -33,7 +44,24 @@ static BAD_SCENE_NAMES: [&str; 11] = [
     "eventTarget",
     "material",
 ];
-*/
+
+pub const GAME_STATE_INACTIVE: i32 = 0;
+pub const GAME_STATE_MAIN_MENU: i32 = 1;
+pub const GAME_STATE_LOADING: i32 = 2;
+pub const GAME_STATE_ENTERING_LEVEL: i32 = 3;
+pub const GAME_STATE_PLAYING: i32 = 4;
+// pub const GAME_STATE_PAUSED: i32 = 5;
+pub const GAME_STATE_EXITING_LEVEL: i32 = 6;
+// pub const GAME_STATE_CUTSCENE: i32 = 7;
+
+// UI_STATE 1: Main Menu
+pub const UI_STATE_PLAYING: i32 = 4;
+pub const UI_STATE_PAUSED: i32 = 5;
+
+// HERO_TRANSITION_STATE 0: N/A, not in transition
+// HERO_TRANSITION_STATE 1: Exiting scene
+// HERO_TRANSITION_STATE 2, 3: Waiting to enter, Entering?
+pub const HERO_TRANSITION_STATE_WAITING_TO_ENTER_LEVEL: i32 = 2;
 
 pub struct StringListOffsets {
     string_len: u64,
@@ -63,6 +91,10 @@ impl StringListOffsets {
 
 pub fn attach_silksong() -> Option<Process> {
     SILKSONG_NAMES.into_iter().find_map(Process::attach)
+}
+
+pub fn is_menu(s: &str) -> bool {
+    s.is_empty() || s == MENU_TITLE || s == QUIT_TO_MENU // || s == PERMA_DEATH
 }
 
 // --------------------------------------------------------
@@ -207,6 +239,106 @@ impl Memory<'_> {
             .read_vec(a + self.string_list_offsets.string_contents, n as usize)
             .ok()?;
         String::from_utf16(&w).ok()
+    }
+}
+
+// --------------------------------------------------------
+
+pub struct SceneStore {
+    prev_scene_name: String,
+    curr_scene_name: String,
+    next_scene_name: String,
+    new_data_curr: bool,
+    new_data_next: bool,
+    last_next: bool,
+    pub split_this_transition: bool,
+}
+
+impl SceneStore {
+    pub fn new() -> SceneStore {
+        SceneStore {
+            prev_scene_name: "".to_string(),
+            curr_scene_name: "".to_string(),
+            next_scene_name: "".to_string(),
+            new_data_curr: false,
+            new_data_next: false,
+            last_next: true,
+            split_this_transition: false,
+        }
+    }
+
+    pub fn pair(&self) -> Pair<&str> {
+        if self.last_next && self.next_scene_name != self.curr_scene_name {
+            Pair {
+                old: &self.curr_scene_name,
+                current: &self.next_scene_name,
+            }
+        } else {
+            Pair {
+                old: &self.prev_scene_name,
+                current: &self.curr_scene_name,
+            }
+        }
+    }
+
+    pub fn new_curr_scene_name(&mut self, csn: String) {
+        if !csn.is_empty()
+            && csn != self.curr_scene_name
+            && !BAD_SCENE_NAMES.contains(&csn.as_str())
+        {
+            self.prev_scene_name = mem::replace(&mut self.curr_scene_name, csn);
+            asr::print_message(&format!("curr_scene_name: {}", self.curr_scene_name));
+            self.new_data_curr = self.curr_scene_name != self.next_scene_name;
+        }
+    }
+
+    pub fn new_next_scene_name(&mut self, nsn: String) {
+        if !nsn.is_empty()
+            && nsn != self.next_scene_name
+            && !BAD_SCENE_NAMES.contains(&nsn.as_str())
+        {
+            self.next_scene_name = nsn;
+            asr::print_message(&format!("next_scene_name: {}", self.next_scene_name));
+            self.new_data_next = !self.next_scene_name.is_empty();
+        }
+    }
+
+    pub fn transition_now(&mut self, mem: &Memory, gm: &GameManagerPointers) -> bool {
+        self.new_curr_scene_name(mem.read_string(&gm.scene_name).unwrap_or_default());
+        self.new_next_scene_name(mem.read_string(&gm.next_scene_name).unwrap_or_default());
+
+        if self.new_data_next {
+            self.new_data_curr = false;
+            self.new_data_next = false;
+            self.last_next = true;
+            self.split_this_transition = false;
+            asr::print_message(&format!(
+                "curr {} -> next {}",
+                &self.curr_scene_name, &self.next_scene_name
+            ));
+            true
+        } else if self.new_data_curr {
+            self.new_data_curr = false;
+            if is_menu(&self.next_scene_name)
+                && !is_menu(&self.prev_scene_name)
+                && !is_menu(&self.curr_scene_name)
+            {
+                asr::print_message(&format!(
+                    "IGNORING spurious curr {} during next {}",
+                    self.curr_scene_name, self.next_scene_name
+                ));
+                return false;
+            }
+            self.last_next = false;
+            self.split_this_transition = false;
+            asr::print_message(&format!(
+                "prev {} -> curr {}",
+                &self.prev_scene_name, &self.curr_scene_name
+            ));
+            true
+        } else {
+            false
+        }
     }
 }
 

@@ -5,42 +5,36 @@ extern crate alloc;
 static ALLOC: dlmalloc::GlobalDlmalloc = dlmalloc::GlobalDlmalloc;
 
 mod silksong_memory;
+mod splits;
+mod timer;
 mod unstable;
 
-use alloc::{boxed::Box, format};
+use alloc::{boxed::Box, format, vec::Vec};
 use asr::{
     future::{next_tick, retry},
     settings::Gui,
     timer::TimerState,
     Address64, Process,
 };
+use ugly_widget::{
+    radio_button::options_str,
+    store::{StoreGui, StoreWidget},
+    ugly_list::UglyList,
+};
 
-use crate::silksong_memory::{
-    attach_silksong, GameManagerPointers, Memory, PlayerDataPointers, MENU_TITLE, QUIT_TO_MENU,
+use crate::{
+    silksong_memory::{
+        attach_silksong, GameManagerPointers, Memory, PlayerDataPointers, SceneStore,
+        GAME_STATE_ENTERING_LEVEL, GAME_STATE_EXITING_LEVEL, GAME_STATE_INACTIVE,
+        GAME_STATE_LOADING, GAME_STATE_MAIN_MENU, GAME_STATE_PLAYING,
+        HERO_TRANSITION_STATE_WAITING_TO_ENTER_LEVEL, MENU_TITLE, QUIT_TO_MENU, UI_STATE_PAUSED,
+        UI_STATE_PLAYING,
+    },
+    timer::SplitterAction,
 };
 
 asr::async_main!(stable);
 asr::panic_handler!();
-
-// --------------------------------------------------------
-
-pub const GAME_STATE_INACTIVE: i32 = 0;
-pub const GAME_STATE_MAIN_MENU: i32 = 1;
-pub const GAME_STATE_LOADING: i32 = 2;
-pub const GAME_STATE_ENTERING_LEVEL: i32 = 3;
-pub const GAME_STATE_PLAYING: i32 = 4;
-// pub const GAME_STATE_PAUSED: i32 = 5;
-pub const GAME_STATE_EXITING_LEVEL: i32 = 6;
-pub const GAME_STATE_CUTSCENE: i32 = 7;
-
-// UI_STATE 1: Main Menu
-pub const UI_STATE_PLAYING: i32 = 4;
-pub const UI_STATE_PAUSED: i32 = 5;
-
-// HERO_TRANSITION_STATE 0: N/A, not in transition
-// HERO_TRANSITION_STATE 1: Exiting scene
-// HERO_TRANSITION_STATE 2, 3: Waiting to enter, Entering?
-pub const HERO_TRANSITION_STATE_WAITING_TO_ENTER_LEVEL: i32 = 2;
 
 // --------------------------------------------------------
 
@@ -93,6 +87,7 @@ impl AutoSplitterState {
                     || self.timer_state == TimerState::Ended =>
             {
                 // Reset
+                self.hits = 0;
             }
             TimerState::Running if is_timer_state_between_runs(self.timer_state) => {
                 // Start
@@ -129,22 +124,86 @@ impl AutoSplitterState {
     }
 }
 
+// --------------------------------------------------------
+
+const TICKS_PER_GUI: usize = 0x100;
+
 #[derive(Gui)]
 struct Settings {
     /// Hit Counter
     #[default = true]
     hit_counter: bool,
-    // TODO: Change these settings.
+    /// Splits
+    #[heading_level = 1]
+    splits: UglyList<splits::Split>,
 }
 
+impl StoreGui for Settings {
+    fn insert_into(&self, settings_map: &asr::settings::Map) -> bool {
+        let a = self.hit_counter.insert_into(settings_map, "hit_counter");
+        let b = self.splits.insert_into(settings_map, "splits");
+        a || b
+    }
+}
+
+impl Settings {
+    pub fn get_hit_counter(&self) -> bool {
+        self.hit_counter
+    }
+    pub fn get_splits(&self) -> Vec<splits::Split> {
+        self.splits
+            .get_list()
+            .into_iter()
+            .map(|rb| rb.clone())
+            .collect()
+    }
+    pub fn get_split(&self, i: u64) -> Option<splits::Split> {
+        self.splits.get_list().get(i as usize).cloned().cloned()
+    }
+
+    pub fn default_init_register() -> Settings {
+        default_splits_init();
+        let mut gui = Settings::register();
+        gui.loop_load_update_store();
+        gui
+    }
+}
+
+fn default_splits_init() -> asr::settings::Map {
+    let settings1 = asr::settings::Map::load();
+    if settings1
+        .get("splits")
+        .is_some_and(|v| v.get_list().is_some_and(|l| !l.is_empty()))
+    {
+        asr::print_message("Settings from asr::settings::Map::load");
+        return settings1;
+    }
+    let l = asr::settings::List::new();
+    l.push(options_str(&splits::Split::StartNewGame));
+    l.push(options_str(&splits::Split::ManualSplit));
+    loop {
+        let old = asr::settings::Map::load();
+        let new = old.clone();
+        new.insert("splits", &l);
+        if new.store_if_unchanged(&old) {
+            asr::print_message("No settings found: default splits initialized");
+            return new;
+        }
+    }
+}
+
+// --------------------------------------------------------
+
 async fn main() {
-    // TODO: Set up some general state and settings.
-    let mut settings = Settings::register();
+    // register the variables on start
+    asr::timer::set_variable_int("hits", 0);
 
     asr::print_message("Hello, World!");
 
-    // register the variables on start
-    asr::timer::set_variable_int("hits", 0);
+    let mut ticks_since_gui = 0;
+    let mut settings = Settings::default_init_register();
+    asr::print_message(&format!("hit_counter: {:?}", settings.get_hit_counter()));
+    asr::print_message(&format!("splits: {:?}", settings.get_splits()));
 
     let mut state = AutoSplitterState::new();
 
@@ -155,6 +214,7 @@ async fn main() {
         process
             .until_closes(async {
                 // TODO: Load some initial information from the process.
+                let mut scene_store = Box::new(SceneStore::new());
                 let mem = Memory::wait_attach(&process).await;
                 let gm = Box::new(GameManagerPointers::new());
                 let pd = Box::new(PlayerDataPointers::new());
@@ -171,12 +231,17 @@ async fn main() {
                 let _: i32 = mem.deref(&pd.health).unwrap_or_default();
                 next_tick().await;
                 loop {
-                    settings.update();
+                    ticks_since_gui += 1;
+                    if TICKS_PER_GUI <= ticks_since_gui {
+                        settings.load_update_store_if_unchanged();
+                        ticks_since_gui = 0;
+                    }
                     state.update();
 
                     // TODO: Do something on every tick.
+                    handle_splits(&settings, &mut state, &mem, &gm, &pd, &mut scene_store).await;
                     load_removal(&mut state, &mem, &gm);
-                    handle_hits(&mut state, &mem, &gm, &pd);
+                    handle_hits(&settings, &mut state, &mem, &gm, &pd);
                     next_tick().await;
                 }
             })
@@ -186,7 +251,7 @@ async fn main() {
 
 async fn wait_attach_silksong(gui: &mut Settings, state: &mut AutoSplitterState) -> Process {
     retry(|| {
-        gui.update();
+        gui.load_update_store_if_unchanged();
         state.update();
         attach_silksong()
     })
@@ -194,6 +259,73 @@ async fn wait_attach_silksong(gui: &mut Settings, state: &mut AutoSplitterState)
 }
 
 // --------------------------------------------------------
+
+async fn handle_splits(
+    settings: &Settings,
+    state: &mut AutoSplitterState,
+    mem: &Memory<'_>,
+    gm: &GameManagerPointers,
+    pd: &PlayerDataPointers,
+    ss: &mut SceneStore,
+) {
+    let trans_now = ss.transition_now(mem, gm);
+    loop {
+        match state.timer_state {
+            TimerState::NotRunning => {
+                // TODO: look up from settings
+                let Some(split) = settings.get_split(0) else {
+                    break;
+                };
+                let a = splits::splits(&split, mem, gm, pd, trans_now, ss);
+                match a {
+                    SplitterAction::Split => {
+                        asr::timer::start();
+                        state.timer_state = TimerState::Running;
+                        state.split_index = Some(0);
+                        break;
+                    }
+                    _ => break,
+                }
+            }
+            TimerState::Running | TimerState::Paused => {
+                // TODO: look up from settings
+                let Some(split) = settings.get_split(state.split_index.unwrap_or_default() + 1)
+                else {
+                    break;
+                };
+                let a = splits::splits(&split, mem, gm, pd, trans_now, ss);
+                match a {
+                    SplitterAction::Reset => {
+                        asr::timer::reset();
+                        state.timer_state = TimerState::NotRunning;
+                        state.split_index = None;
+                        state.hits = 0;
+                        // no break, allow other actions after a skip or reset
+                    }
+                    SplitterAction::Skip => {
+                        asr::timer::skip_split();
+                        state.split_index = Some(state.split_index.unwrap_or_default() + 1);
+                        // no break, allow other actions after a skip or reset
+                    }
+                    SplitterAction::Split => {
+                        asr::timer::split();
+                        state.split_index = Some(state.split_index.unwrap_or_default() + 1);
+                        break;
+                    }
+                    SplitterAction::ManualSplit => {
+                        #[cfg(not(feature = "unstable"))]
+                        {
+                            state.split_index = Some(state.split_index.unwrap_or_default() + 1);
+                        }
+                        break;
+                    }
+                    _ => break,
+                }
+            }
+            _ => break,
+        }
+    }
+}
 
 fn load_removal(state: &mut AutoSplitterState, mem: &Memory, gm: &GameManagerPointers) {
     // only remove loads if timer is running
@@ -234,9 +366,7 @@ fn load_removal(state: &mut AutoSplitterState, mem: &Memory, gm: &GameManagerPoi
         || (game_state == GAME_STATE_EXITING_LEVEL || game_state == GAME_STATE_LOADING)
         || (hero_transition_state == HERO_TRANSITION_STATE_WAITING_TO_ENTER_LEVEL)
         || (ui_state != UI_STATE_PLAYING
-            && (loading_menu
-                || (ui_state != UI_STATE_PAUSED
-                    && (!next_scene.is_empty() || scene_name == "_test_charms")))
+            && (loading_menu || (ui_state != UI_STATE_PAUSED && (!next_scene.is_empty())))
             && next_scene != scene_name);
     if is_game_time_paused {
         asr::timer::pause_game_time();
@@ -272,11 +402,16 @@ fn load_removal(state: &mut AutoSplitterState, mem: &Memory, gm: &GameManagerPoi
 }
 
 fn handle_hits(
+    settings: &Settings,
     state: &mut AutoSplitterState,
     mem: &Memory,
     gm: &GameManagerPointers,
     pd: &PlayerDataPointers,
 ) {
+    // only count hits if hit counter is true
+    if !settings.get_hit_counter() {
+        return;
+    }
     // only count hits if timer is running
     if asr::timer::state() != TimerState::Running {
         return;
