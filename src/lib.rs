@@ -88,6 +88,9 @@ impl AutoSplitterState {
             {
                 // Reset
                 self.hits = 0;
+                self.look_for_teleporting = false;
+                self.last_game_state = GAME_STATE_INACTIVE;
+                self.last_paused = false;
             }
             TimerState::Running if is_timer_state_between_runs(self.timer_state) => {
                 // Start
@@ -300,6 +303,9 @@ async fn handle_splits(
                         state.timer_state = TimerState::NotRunning;
                         state.split_index = None;
                         state.hits = 0;
+                        state.look_for_teleporting = false;
+                        state.last_game_state = GAME_STATE_INACTIVE;
+                        state.last_paused = false;
                         // no break, allow other actions after a skip or reset
                     }
                     SplitterAction::Skip => {
