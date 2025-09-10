@@ -64,7 +64,7 @@ pub fn transition_splits(
     match split {
         // region: Start, End, and Menu
         Split::StartNewGame => {
-            should_split(OPENING_SCENES.contains(&scenes.old) && scenes.current == "Tutorial_01")
+            should_split(OPENING_SCENES.contains(&scenes.old) && scenes.current == "Tut_01")
         }
         Split::Menu => should_split(scenes.current == MENU_TITLE),
         Split::AnyTransition => should_split(

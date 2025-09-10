@@ -25,9 +25,8 @@ static SILKSONG_NAMES: [&str; 2] = [
 pub const MENU_TITLE: &str = "Menu_Title";
 pub const QUIT_TO_MENU: &str = "Quit_To_Menu";
 
-pub const INTRO_CUTSCENE: &str = "Intro_Cutscene";
 pub const OPENING_SEQUENCE: &str = "Opening_Sequence";
-pub static OPENING_SCENES: [&str; 2] = [INTRO_CUTSCENE, OPENING_SEQUENCE];
+pub static OPENING_SCENES: [&str; 1] = [OPENING_SEQUENCE];
 
 // static NON_PLAY_SCENES: [&str; 5] = [PRE_MENU_INTRO, MENU_TITLE, QUIT_TO_MENU, INTRO_CUTSCENE, OPENING_SEQUENCE];
 
