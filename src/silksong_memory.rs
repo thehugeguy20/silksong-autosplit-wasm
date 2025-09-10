@@ -194,7 +194,7 @@ pub struct Memory<'a> {
 }
 
 impl Memory<'_> {
-    pub async fn wait_attach(process: &Process) -> Memory {
+    pub async fn wait_attach<'a>(process: &'a Process) -> Memory<'a> {
         asr::print_message("Memory wait_attach: Module wait_attach...");
         next_tick().await;
         let mut found_module = false;
