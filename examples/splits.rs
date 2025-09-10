@@ -2,15 +2,15 @@
 // cargo run --example splits --target x86_64-apple-darwin
 
 extern crate asr;
-extern crate silksong_autosplit_wasm;
 #[cfg(not(target_os = "unknown"))]
 extern crate serde_json;
+extern crate silksong_autosplit_wasm;
 extern crate std;
 
 #[cfg(not(target_os = "unknown"))]
-use silksong_autosplit_wasm::splits::Split;
-#[cfg(not(target_os = "unknown"))]
 use serde_json::json;
+#[cfg(not(target_os = "unknown"))]
+use silksong_autosplit_wasm::splits::Split;
 #[cfg(not(target_os = "unknown"))]
 use std::{
     fs::File,
@@ -46,6 +46,6 @@ fn main() -> std::io::Result<()> {
         writeln!(&mut writer)?;
         writer.flush()?;
     }
-    
+
     Ok(())
 }

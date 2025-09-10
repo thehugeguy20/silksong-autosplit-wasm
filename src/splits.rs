@@ -8,7 +8,7 @@ use ugly_widget::{
 use crate::{
     silksong_memory::{
         is_menu, GameManagerPointers, Memory, PlayerDataPointers, SceneStore, MENU_TITLE,
-        OPENING_SCENES,
+        NON_MENU_GAME_STATES, OPENING_SCENES,
     },
     timer::{should_split, SplitterAction},
 };
@@ -38,6 +38,46 @@ pub enum Split {
     /// Splits when entering a transition (only one will split per transition)
     AnyTransition,
     // endregion: Start, End, and Menu
+
+    // region: MossLands
+    /// Moss Mother (Boss)
+    ///
+    /// Splits when killing Moss Mother
+    MossMother,
+    /// Silk Spear (Skill)
+    ///
+    /// Splits when obtaining Silk Spear
+    SilkSpear,
+    // endregion: MossLands
+
+    // region: Marrow
+    /// Bell Beast (Boss)
+    ///
+    /// Splits when defeating the Bell Beast
+    BellBeast,
+    // endregion: Marrow
+
+    // region: DeepDocks
+    /// Swift Step (Skill)
+    ///
+    /// Splits when obtaining Swift Step (Dash/Sprint)
+    SwiftStep,
+    /// Lace 1 (Boss)
+    ///
+    /// Splits when defeating Lace 1 in DeepDocks
+    Lace1,
+    // endregion: DeepDocks
+
+    // region: FarFields
+    /// Drifter's Cloak (Skill)
+    ///
+    /// Splits when obtaining Drifter's Cloak (Umbrella/Float)
+    DriftersCloak,
+    /// Fourth Chorus (Boss)
+    ///
+    /// Splits when killing Fourth Chorus
+    FourthChorus,
+    // endregion: FarFields
 }
 
 impl StoreWidget for Split {
@@ -79,14 +119,38 @@ pub fn transition_splits(
 pub fn continuous_splits(
     split: &Split,
     mem: &Memory,
-    _gm: &GameManagerPointers,
+    gm: &GameManagerPointers,
     pd: &PlayerDataPointers,
 ) -> SplitterAction {
+    let game_state: i32 = mem.deref(&gm.game_state).unwrap_or_default();
+    if !NON_MENU_GAME_STATES.contains(&game_state) {
+        return should_split(false);
+    }
     match split {
         // region: Start, End, and Menu
         Split::ManualSplit => SplitterAction::ManualSplit,
         Split::PlayerDeath => should_split(mem.deref(&pd.health).is_ok_and(|h: i32| h == 0)),
         // endregion: Start, End, and Menu
+
+        // region: MossLands
+        Split::MossMother => should_split(mem.deref(&pd.defeated_moss_mother).unwrap_or_default()),
+        Split::SilkSpear => should_split(mem.deref(&pd.has_needle_throw).unwrap_or_default()),
+        // endregion: MossLands
+
+        // region: Marrow
+        Split::BellBeast => should_split(mem.deref(&pd.defeated_bell_beast).unwrap_or_default()),
+        // endregion: Marrow
+
+        // region: DeepDocks
+        Split::SwiftStep => should_split(mem.deref(&pd.has_dash).unwrap_or_default()),
+        Split::Lace1 => should_split(mem.deref(&pd.defeated_lace1).unwrap_or_default()),
+        // endregion: DeepDocks
+
+        // region: FarFields
+        Split::DriftersCloak => should_split(mem.deref(&pd.has_brolly).unwrap_or_default()),
+        Split::FourthChorus => should_split(mem.deref(&pd.defeated_song_golem).unwrap_or_default()),
+        // endregion: FarFields
+
         // else
         _ => should_split(false),
     }

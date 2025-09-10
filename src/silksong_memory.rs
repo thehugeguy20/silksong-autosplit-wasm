@@ -28,7 +28,7 @@ pub const QUIT_TO_MENU: &str = "Quit_To_Menu";
 pub const OPENING_SEQUENCE: &str = "Opening_Sequence";
 pub static OPENING_SCENES: [&str; 1] = [OPENING_SEQUENCE];
 
-// static NON_PLAY_SCENES: [&str; 5] = [PRE_MENU_INTRO, MENU_TITLE, QUIT_TO_MENU, INTRO_CUTSCENE, OPENING_SEQUENCE];
+// static NON_PLAY_SCENES: [&str; 4] = [PRE_MENU_INTRO, MENU_TITLE, QUIT_TO_MENU, OPENING_SEQUENCE];
 
 static BAD_SCENE_NAMES: [&str; 11] = [
     "Untagged",
@@ -51,7 +51,9 @@ pub const GAME_STATE_ENTERING_LEVEL: i32 = 3;
 pub const GAME_STATE_PLAYING: i32 = 4;
 // pub const GAME_STATE_PAUSED: i32 = 5;
 pub const GAME_STATE_EXITING_LEVEL: i32 = 6;
-// pub const GAME_STATE_CUTSCENE: i32 = 7;
+pub const GAME_STATE_CUTSCENE: i32 = 7;
+
+pub static NON_MENU_GAME_STATES: [i32; 2] = [GAME_STATE_PLAYING, GAME_STATE_CUTSCENE];
 
 // UI_STATE 1: Main Menu
 pub const UI_STATE_PLAYING: i32 = 4;
@@ -172,6 +174,13 @@ declare_pointers!(GameManagerPointers {
 
 declare_pointers!(PlayerDataPointers {
     health: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "health"]),
+    defeated_moss_mother: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedMossMother"]),
+    has_needle_throw: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "hasNeedleThrow"]),
+    defeated_bell_beast: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedBellBeast"]),
+    has_dash: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "hasDash"]),
+    defeated_lace1: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedLace1"]),
+    has_brolly: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "hasBrolly"]),
+    defeated_song_golem: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedSongGolem"]),
 });
 
 // --------------------------------------------------------
