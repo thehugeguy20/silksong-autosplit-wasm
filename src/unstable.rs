@@ -16,9 +16,7 @@ pub fn timer_current_split_index() -> Option<u64> {
 /// or `Some(false)` if skipped.
 /// If `idx` is greater than or equal to the current split index,
 /// `None` is returned instead.
+#[cfg(feature = "unstable")]
 pub fn timer_segment_splitted(_idx: u64) -> Option<bool> {
-    #[cfg(feature = "unstable")]
-    return asr::timer::segment_splitted(_idx);
-    #[allow(unreachable_code)]
-    None
+    asr::timer::segment_splitted(_idx)
 }

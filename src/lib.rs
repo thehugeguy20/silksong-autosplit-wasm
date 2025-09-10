@@ -95,6 +95,10 @@ impl AutoSplitterState {
                     || self.timer_state == TimerState::Ended =>
             {
                 // Reset
+                #[cfg(not(feature = "unstable"))]
+                {
+                    self.split_index = None;
+                }
                 self.hits = 0;
                 self.look_for_teleporting = false;
                 self.last_game_state = GAME_STATE_INACTIVE;
@@ -117,8 +121,13 @@ impl AutoSplitterState {
                     || self.timer_state == TimerState::Paused =>
             {
                 // End
+                #[cfg(not(feature = "unstable"))]
+                {
+                    self.split_index = Some(self.split_index.unwrap_or_default() + 1);
+                }
             }
             _ => {
+                #[cfg(feature = "unstable")]
                 if let (Some(new_index), Some(old_index)) = (&new_index, &self.split_index) {
                     if new_index < old_index {
                         // Undo
@@ -134,7 +143,10 @@ impl AutoSplitterState {
         }
 
         self.timer_state = new_state;
-        self.split_index = new_index;
+        #[cfg(feature = "unstable")]
+        {
+            self.split_index = new_index;
+        }
     }
 }
 
