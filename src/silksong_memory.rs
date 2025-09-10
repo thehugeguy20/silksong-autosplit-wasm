@@ -1,8 +1,9 @@
 use core::mem;
 
+#[cfg(debug_assertions)]
+use alloc::format;
 use alloc::{
     boxed::Box,
-    format,
     string::{String, ToString},
     vec::Vec,
 };
@@ -295,6 +296,7 @@ impl SceneStore {
             && !BAD_SCENE_NAMES.contains(&csn.as_str())
         {
             self.prev_scene_name = mem::replace(&mut self.curr_scene_name, csn);
+            #[cfg(debug_assertions)]
             asr::print_message(&format!("curr_scene_name: {}", self.curr_scene_name));
             self.new_data_curr = self.curr_scene_name != self.next_scene_name;
         }
@@ -306,6 +308,7 @@ impl SceneStore {
             && !BAD_SCENE_NAMES.contains(&nsn.as_str())
         {
             self.next_scene_name = nsn;
+            #[cfg(debug_assertions)]
             asr::print_message(&format!("next_scene_name: {}", self.next_scene_name));
             self.new_data_next = !self.next_scene_name.is_empty();
         }
@@ -320,6 +323,7 @@ impl SceneStore {
             self.new_data_next = false;
             self.last_next = true;
             self.split_this_transition = false;
+            #[cfg(debug_assertions)]
             asr::print_message(&format!(
                 "curr {} -> next {}",
                 &self.curr_scene_name, &self.next_scene_name
@@ -331,6 +335,7 @@ impl SceneStore {
                 && !is_menu(&self.prev_scene_name)
                 && !is_menu(&self.curr_scene_name)
             {
+                #[cfg(debug_assertions)]
                 asr::print_message(&format!(
                     "IGNORING spurious curr {} during next {}",
                     self.curr_scene_name, self.next_scene_name
@@ -339,6 +344,7 @@ impl SceneStore {
             }
             self.last_next = false;
             self.split_this_transition = false;
+            #[cfg(debug_assertions)]
             asr::print_message(&format!(
                 "prev {} -> curr {}",
                 &self.prev_scene_name, &self.curr_scene_name

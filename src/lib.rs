@@ -42,14 +42,18 @@ struct AutoSplitterState {
     timer_state: TimerState,
     split_index: Option<u64>,
     look_for_teleporting: bool,
+    #[cfg(debug_assertions)]
     last_ui_state: i32,
     last_game_state: i32,
+    #[cfg(debug_assertions)]
     last_hero_transition_state: i32,
     hits: i64,
     last_recoil: bool,
     last_hazard: bool,
     last_health_0: bool,
+    #[cfg(debug_assertions)]
     last_health: Option<i32>,
+    #[cfg(debug_assertions)]
     last_paused: bool,
 }
 
@@ -61,14 +65,18 @@ impl AutoSplitterState {
             timer_state,
             split_index,
             look_for_teleporting: false,
+            #[cfg(debug_assertions)]
             last_ui_state: 0,
             last_game_state: GAME_STATE_INACTIVE,
+            #[cfg(debug_assertions)]
             last_hero_transition_state: 0,
             hits: 0,
             last_recoil: false,
             last_hazard: false,
             last_health_0: false,
+            #[cfg(debug_assertions)]
             last_health: None,
+            #[cfg(debug_assertions)]
             last_paused: false,
         }
     }
@@ -90,7 +98,10 @@ impl AutoSplitterState {
                 self.hits = 0;
                 self.look_for_teleporting = false;
                 self.last_game_state = GAME_STATE_INACTIVE;
-                self.last_paused = false;
+                #[cfg(debug_assertions)]
+                {
+                    self.last_paused = false;
+                }
             }
             TimerState::Running if is_timer_state_between_runs(self.timer_state) => {
                 // Start
@@ -305,7 +316,10 @@ async fn handle_splits(
                         state.hits = 0;
                         state.look_for_teleporting = false;
                         state.last_game_state = GAME_STATE_INACTIVE;
-                        state.last_paused = false;
+                        #[cfg(debug_assertions)]
+                        {
+                            state.last_paused = false;
+                        }
                         // no break, allow other actions after a skip or reset
                     }
                     SplitterAction::Skip => {
@@ -380,6 +394,7 @@ fn load_removal(state: &mut AutoSplitterState, mem: &Memory, gm: &GameManagerPoi
         asr::timer::resume_game_time();
     }
 
+    #[cfg(debug_assertions)]
     {
         if ui_state != state.last_ui_state {
             asr::print_message(&format!("ui_state: {}", ui_state));
@@ -392,6 +407,7 @@ fn load_removal(state: &mut AutoSplitterState, mem: &Memory, gm: &GameManagerPoi
     }
     state.last_game_state = game_state;
 
+    #[cfg(debug_assertions)]
     {
         if hero_transition_state != state.last_hero_transition_state {
             asr::print_message(&format!("hero_transition_state: {}", hero_transition_state));
@@ -399,6 +415,7 @@ fn load_removal(state: &mut AutoSplitterState, mem: &Memory, gm: &GameManagerPoi
         state.last_hero_transition_state = hero_transition_state;
     }
 
+    #[cfg(debug_assertions)]
     {
         if is_game_time_paused != state.last_paused {
             asr::print_message(&format!("is_game_time_paused: {}", is_game_time_paused));
@@ -426,6 +443,7 @@ fn handle_hits(
     let recoil: bool = mem.deref(&gm.hero_recoil_frozen).unwrap_or_default();
     if !state.last_recoil && recoil {
         add_hit(state);
+        #[cfg(debug_assertions)]
         asr::print_message(&format!("hit: {}, from recoil", state.hits));
     }
     state.last_recoil = recoil;
@@ -433,6 +451,7 @@ fn handle_hits(
     let hazard: bool = mem.deref(&gm.hazard_death).unwrap_or_default();
     if !state.last_hazard && hazard {
         add_hit(state);
+        #[cfg(debug_assertions)]
         asr::print_message(&format!("hit: {}, from hazard", state.hits));
     }
     state.last_hazard = hazard;
@@ -442,10 +461,12 @@ fn handle_hits(
     let health_0 = maybe_health == Some(0) && game_state == GAME_STATE_PLAYING;
     if !state.last_health_0 && health_0 {
         add_hit(state);
+        #[cfg(debug_assertions)]
         asr::print_message(&format!("hit: {}, from heath 0", state.hits));
     }
     state.last_health_0 = health_0;
 
+    #[cfg(debug_assertions)]
     {
         if maybe_health != state.last_health {
             asr::print_message(&format!("health: {:?}", maybe_health));
