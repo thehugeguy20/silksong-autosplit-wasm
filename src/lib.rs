@@ -100,6 +100,7 @@ impl AutoSplitterState {
                     self.split_index = None;
                 }
                 self.hits = 0;
+                asr::timer::set_variable_int("hits", self.hits);
                 self.look_for_teleporting = false;
                 self.last_game_state = GAME_STATE_INACTIVE;
                 #[cfg(debug_assertions)]
@@ -326,6 +327,7 @@ async fn handle_splits(
                         state.timer_state = TimerState::NotRunning;
                         state.split_index = None;
                         state.hits = 0;
+                        asr::timer::set_variable_int("hits", state.hits);
                         state.look_for_teleporting = false;
                         state.last_game_state = GAME_STATE_INACTIVE;
                         #[cfg(debug_assertions)]
