@@ -221,14 +221,14 @@ impl Memory<'_> {
         let mut found_module = false;
         let mut needed_retry = false;
         loop {
-            let module = mono::Module::wait_attach(&process, mono::Version::V3).await;
+            let module = mono::Module::wait_attach(process, mono::Version::V3).await;
             if !found_module {
                 found_module = true;
                 asr::print_message("Memory wait_attach: module get_default_image...");
                 next_tick().await;
             }
             for _ in 0..0x10 {
-                if let Some(image) = module.get_default_image(&process) {
+                if let Some(image) = module.get_default_image(process) {
                     asr::print_message("Memory wait_attach: got module and image");
                     next_tick().await;
                     return Memory {
@@ -252,7 +252,7 @@ impl Memory<'_> {
         &self,
         p: &UnityPointer<CAP>,
     ) -> Result<T, asr::Error> {
-        p.deref(&self.process, &self.module, &self.image)
+        p.deref(self.process, &self.module, &self.image)
     }
 
     pub fn read_string<const CAP: usize>(&self, p: &UnityPointer<CAP>) -> Option<String> {
