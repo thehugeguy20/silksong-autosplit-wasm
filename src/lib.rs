@@ -178,11 +178,7 @@ impl Settings {
         self.hit_counter
     }
     pub fn get_splits(&self) -> Vec<splits::Split> {
-        self.splits
-            .get_list()
-            .into_iter()
-            .cloned()
-            .collect()
+        self.splits.get_list().into_iter().cloned().collect()
     }
     pub fn get_split(&self, i: u64) -> Option<splits::Split> {
         self.splits.get_list().get(i as usize).cloned().cloned()
