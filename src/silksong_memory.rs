@@ -377,4 +377,10 @@ impl SceneStore {
     }
 }
 
+impl Default for SceneStore {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 // --------------------------------------------------------
