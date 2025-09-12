@@ -114,6 +114,12 @@ macro_rules! declare_pointers {
                 }
             }
         }
+
+        impl Default for $g {
+            fn default() -> Self {
+                Self::new()
+            }
+        }
     };
 }
 
