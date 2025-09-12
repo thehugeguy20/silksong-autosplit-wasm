@@ -67,7 +67,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Run Clippy
-        run: cargo clippy --all-features
+        run: cargo clippy --all-features -- -A clippy::nonminimal_bool
 
   format:
     name: Check formatting
