@@ -6,7 +6,7 @@ An auto splitter for Hollow Knight: Silksong.
 
 Download the `silksong_autosplit_wasm_stable.wasm` file from the [Latest Release](https://github.com/AlexKnauth/silksong-autosplit-wasm/releases/latest).
 
-Or follow the steps in [Compilation](#compilation) and use `target/wasm32-wasip1/release/silksong_autosplit_wasm.wasm`.
+Or follow the steps in [Compilation](#compilation) and use `target/wasm32-unknown-unknown/release/silksong_autosplit_wasm.wasm`.
 
 ## Compilation
 
