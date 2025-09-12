@@ -181,7 +181,7 @@ impl Settings {
         self.splits
             .get_list()
             .into_iter()
-            .map(|rb| rb.clone())
+            .cloned()
             .collect()
     }
     pub fn get_split(&self, i: u64) -> Option<splits::Split> {
