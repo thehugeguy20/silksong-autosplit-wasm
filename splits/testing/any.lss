@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Run version="1.7.0">
+  <GameIcon></GameIcon>
+  <GameName>Hollow Knight: Silksong</GameName>
+  <CategoryName>Any%</CategoryName>
+  <Metadata>
+    <Run id="" />
+    <Platform usesEmulator="False" />
+    <Variables>
+      <Variable name="Any% Glitch">No Major Glitches</Variable>
+    </Variables>
+  </Metadata>
+  <Offset>00:00:00</Offset>
+  <AttemptCount>0</AttemptCount>
+  <AttemptHistory></AttemptHistory>
+  <Segments>
+    <Segment>
+      <Name>Moss Mother</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Silk Spear</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Bell Beast</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Swift Step</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Lace 1</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Drifter's Cloak</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Enter Greymoor</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Moorwing</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Cling Grip</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Widow</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Enter The Mist</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Leave The Mist</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Phantom</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Act 2 Started</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Cogwork Dancers</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Trobbio</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Clawline</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Vaultkeepers Melody</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Architects Melody</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Enter High Halls</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Enter High Halls Gauntlet</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Conductors Melody</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Lace 2</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+    <Segment>
+      <Name>Grand Mother Silk</Name>
+      <Icon></Icon>
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime></BestSegmentTime>
+      <SegmentHistory></SegmentHistory>
+    </Segment>
+  </Segments>
+  <AutoSplitterSettings>
+    <Version>1.0.0.0</Version>
+    <ScriptPath></ScriptPath>
+    <CustomSettings>
+      <Setting id="splits" type="list">
+        <Setting type="string" value="StartNewGame"></Setting>
+        <Setting type="string" value="MossMother"></Setting>
+        <Setting type="string" value="SilkSpear"></Setting>
+        <Setting type="string" value="BellBeast"></Setting>
+        <Setting type="string" value="SwiftStep"></Setting>
+        <Setting type="string" value="Lace1"></Setting>
+        <Setting type="string" value="DriftersCloak"></Setting>
+        <Setting type="string" value="EnterGreymoor"></Setting>
+        <Setting type="string" value="Moorwing"></Setting>
+        <Setting type="string" value="ClingGrip"></Setting>
+        <Setting type="string" value="Widow"></Setting>
+        <Setting type="string" value="EnterMist"></Setting>
+        <Setting type="string" value="LeaveMist"></Setting>
+        <Setting type="string" value="Phantom"></Setting>
+        <Setting type="string" value="Act2Started"></Setting>
+        <Setting type="string" value="CogworkDancers"></Setting>
+        <Setting type="string" value="Trobbio"></Setting>
+        <Setting type="string" value="Clawline"></Setting>
+        <Setting type="string" value="VaultkeepersMelody"></Setting>
+        <Setting type="string" value="ArchitectsMelody"></Setting>
+        <Setting type="string" value="EnterHighHalls"></Setting>
+        <Setting type="string" value="EnterHighHallsGauntlet"></Setting>
+        <Setting type="string" value="ConductorsMelody"></Setting>
+        <Setting type="string" value="Lace2"></Setting>
+        <Setting type="string" value="EndingSplit"></Setting>
+      </Setting>
+    </CustomSettings>
+  </AutoSplitterSettings>
+</Run>
