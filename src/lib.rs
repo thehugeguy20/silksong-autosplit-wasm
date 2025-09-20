@@ -365,7 +365,7 @@ async fn main() {
                 let mem = Memory::wait_attach(&process).await;
                 next_tick().await;
                 let gm = Box::new(GameManagerPointers::new());
-                let pd = Box::new(PlayerDataPointers::new());
+                let pd: Box<PlayerDataPointers> = Box::new(PlayerDataPointers::new());
                 let _: bool = mem.deref(&gm.accepting_input).unwrap_or_default();
                 let _: Address64 = mem.deref(&gm.entry_gate_name).unwrap_or_default();
                 let _: i32 = mem.deref(&gm.game_state).unwrap_or_default();
