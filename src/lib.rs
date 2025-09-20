@@ -361,7 +361,9 @@ async fn main() {
             .until_closes(async {
                 // TODO: Load some initial information from the process.
                 let mut scene_store = Box::new(SceneStore::new());
+                next_tick().await;
                 let mem = Memory::wait_attach(&process).await;
+                next_tick().await;
                 let gm = Box::new(GameManagerPointers::new());
                 let pd = Box::new(PlayerDataPointers::new());
                 let _: bool = mem.deref(&gm.accepting_input).unwrap_or_default();
@@ -378,6 +380,8 @@ async fn main() {
                 let _: Address64 = mem.deref(&gm.scene_name).unwrap_or_default();
                 let _: i32 = mem.deref(&gm.ui_state_vanilla).unwrap_or_default();
                 let _: i32 = mem.deref(&pd.health).unwrap_or_default();
+                next_tick().await;
+                asr::print_message("Initialized load removal pointers");
                 next_tick().await;
                 loop {
                     ticks_since_gui += 1;
