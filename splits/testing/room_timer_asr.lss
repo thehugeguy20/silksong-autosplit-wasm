@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Run version="1.7.0">
+  <GameIcon />
+  <GameName>Hollow Knight: Silksong</GameName>
+  <CategoryName>Room Timer</CategoryName>
+  <LayoutPath>C:\Users\Owner\Documents\git\LiveSplit\silksong-autosplit-wasm\splits\testing\room_timer_asr.lsl</LayoutPath>
+  <Metadata>
+    <Run id="" />
+    <Platform usesEmulator="False"></Platform>
+    <Region></Region>
+    <Variables />
+    <CustomVariables />
+  </Metadata>
+  <Offset>00:00:00</Offset>
+  <AttemptCount>0</AttemptCount>
+  <AttemptHistory />
+  <Segments>
+    <Segment>
+      <Name>Exit Room</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+  </Segments>
+  <AutoSplitterSettings />
+</Run>
