@@ -31,11 +31,17 @@ fn main() -> std::io::Result<()> {
                 .map(|o| {
                     let RadioButtonOption {
                         key,
+                        alias,
                         description,
                         tooltip,
                         ..
                     } = o;
-                    json!({ "key": key, "description": description, "tooltip": tooltip })
+                    json!({
+                        "key": key,
+                        "alias": alias,
+                        "description": description,
+                        "tooltip": tooltip
+                    })
                 })
                 .collect(),
         );
