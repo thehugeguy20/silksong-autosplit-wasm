@@ -7,8 +7,9 @@ use ugly_widget::{
 
 use crate::{
     silksong_memory::{
-        is_menu, GameManagerPointers, Memory, PlayerDataPointers, SceneStore, MENU_TITLE,
-        NON_MENU_GAME_STATES, OPENING_SCENES,
+        is_menu, GameManagerPointers, Memory, PlayerDataPointers, SceneStore,
+        DEATH_RESPAWN_MARKER_INIT, GAME_STATE_PLAYING, MENU_TITLE, NON_MENU_GAME_STATES,
+        OPENING_SCENES,
     },
     timer::{should_split, SplitterAction},
 };
@@ -721,15 +722,23 @@ pub fn transition_splits(
 pub fn transition_once_splits(
     split: &Split,
     scenes: &Pair<&str>,
-    _mem: &Memory,
-    _gm: &GameManagerPointers,
-    _pd: &PlayerDataPointers,
+    mem: &Memory,
+    gm: &GameManagerPointers,
+    pd: &PlayerDataPointers,
 ) -> SplitterAction {
     match split {
         // region: Start, End, and Menu
-        Split::StartNewGame => {
-            should_split(OPENING_SCENES.contains(&scenes.old) && scenes.current == "Tut_01")
-        }
+        Split::StartNewGame => should_split(
+            scenes.current == "Tut_01"
+                && (OPENING_SCENES.contains(&scenes.old)
+                    || (scenes.old == MENU_TITLE
+                        && mem.read_string(&gm.entry_gate_name).unwrap_or_default()
+                            == DEATH_RESPAWN_MARKER_INIT))
+                && mem.deref(&pd.disable_pause).is_ok_and(|d: bool| !d)
+                && mem
+                    .deref(&gm.game_state)
+                    .is_ok_and(|s: i32| s == GAME_STATE_PLAYING),
+        ),
 
         // else
         _ => should_split(false),
