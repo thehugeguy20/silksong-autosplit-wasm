@@ -1,3 +1,4 @@
+// cargo run --example splits --target $(rustc -vV | sed -n 's|host: ||p')
 // cargo run --example splits --target aarch64-apple-darwin
 // cargo run --example splits --target x86_64-apple-darwin
 
