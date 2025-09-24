@@ -131,10 +131,6 @@ pub enum Split {
     ///
     /// Splits when entering Greymoor
     EnterGreymoor,
-    ///  Reaper Crest (Transition)
-    /// 
-    /// Splits when leaving the church with the Reaper Crest unlocked
-    ReaperTrans,
     /// Greymoor Bell (Event)
     ///
     /// Splits when ringing the Greymoor Bell Shrine
@@ -697,9 +693,6 @@ pub fn transition_splits(
         Split::EnterGreymoor => should_split(
             !scenes.old.starts_with("Greymoor") && scenes.current.starts_with("Greymoor"),
         ),
-        Split::ReaperTrans => {
-            should_split(mem.deref(&pd.completed_memory_reaper).unwrap_or_default())
-        }
         Split::MoorwingTrans => should_split(
             mem.deref(&pd.defeated_vampire_gnat_boss)
                 .unwrap_or_default(),

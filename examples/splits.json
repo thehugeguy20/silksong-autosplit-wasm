@@ -151,12 +151,6 @@
   },
   {
     "alias": null,
-    "description": "Reaper Crest (Transition)",
-    "key": "Reaper",
-    "tooltip": "Splits when leaving the church with the Reaper Crest unlocked"
-  },
-  {
-    "alias": null,
     "description": "Moorwing (Boss)",
     "key": "Moorwing",
     "tooltip": "Splits when killing Moorwing"
