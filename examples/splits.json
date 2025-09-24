@@ -115,6 +115,12 @@
   },
   {
     "alias": null,
+    "description": "Enter Wormways (Transition)",
+    "key": "EnterWormways",
+    "tooltip": "Splits when entering Wormways"
+  },  
+  {
+    "alias": null,
     "description": "Drifter's Cloak (Skill)",
     "key": "DriftersCloak",
     "tooltip": "Splits when obtaining Drifter's Cloak (Umbrella/Float)"
@@ -145,6 +151,12 @@
   },
   {
     "alias": null,
+    "description": "Reaper Crest (Transition)",
+    "key": "Reaper",
+    "tooltip": "Splits when leaving the church with the Reaper Crest unlocked"
+  },
+  {
+    "alias": null,
     "description": "Moorwing (Boss)",
     "key": "Moorwing",
     "tooltip": "Splits when killing Moorwing"
@@ -155,6 +167,18 @@
     "key": "MoorwingTrans",
     "tooltip": "Splits on the transition after killing Moorwing"
   },
+ {
+    "alias": null,
+    "description": "Enter Bellhart (Transition)",
+    "key": "EnterBellhart",
+    "tooltip": "Splits when entering Bellhart"
+  },
+ {
+    "alias": null,
+    "description": "Enter Shellwood (Transition)",
+    "key": "EnterShellwood",
+    "tooltip": "Splits when entering Shellwood"
+  },  
   {
     "alias": null,
     "description": "Cling Grip (Skill)",

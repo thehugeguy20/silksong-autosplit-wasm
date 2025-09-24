@@ -104,6 +104,13 @@ pub enum Split {
     DeepDocksBell,
     // endregion: DeepDocks
 
+    // region: Wormways
+    /// Enter Wormways (Transition)
+    ///
+    /// Splits on entering Wormways
+    EnterWormways,
+    // endregion: Wormways
+
     // region: FarFields
     /// Drifter's Cloak (Skill)
     ///
@@ -124,6 +131,10 @@ pub enum Split {
     ///
     /// Splits when entering Greymoor
     EnterGreymoor,
+    ///  Reaper Crest (Transition)
+    /// 
+    /// Splits when leaving the church with the Reaper Crest unlocked
+    ReaperTrans,
     /// Greymoor Bell (Event)
     ///
     /// Splits when ringing the Greymoor Bell Shrine
@@ -139,6 +150,10 @@ pub enum Split {
     // endregion: Greymoor
 
     // region: Shellwood
+    /// Enter Shellwood (Transition)
+    /// 
+    /// Splits when entering Shellwood
+    EnterShellwood,
     /// Cling Grip (Skill)
     ///
     /// Splits when obtaining Cling Grip (Wall Jump)
@@ -154,6 +169,10 @@ pub enum Split {
     // endregion: Shellwood
 
     // region: Bellhart
+    /// Enter Bellhart (Transition)
+    /// 
+    /// Splits when entering Bellhart
+    EnterBellhart,
     /// Widow (Boss)
     ///
     /// Splits when killing Widow
@@ -663,6 +682,13 @@ pub fn transition_splits(
         Split::Lace1Trans => should_split(mem.deref(&pd.defeated_lace1).unwrap_or_default()),
         // endregion: DeepDocks
 
+        // region: Wormways
+        Split::EnterWormways => should_split(
+            (scenes.old == "Crawl_02" && scenes.current == "Crawl_03b") ||
+            (scenes.old == "Aspid_01" && scenes.current == "Crawl_01"),
+        ),
+        // endregion: Wormways
+
         // region: FarFields
         Split::DriftersCloakTrans => should_split(mem.deref(&pd.has_brolly).unwrap_or_default()),
         // endregion: FarFields
@@ -671,14 +697,27 @@ pub fn transition_splits(
         Split::EnterGreymoor => should_split(
             !scenes.old.starts_with("Greymoor") && scenes.current.starts_with("Greymoor"),
         ),
+        Split::ReaperTrans => {
+            should_split(mem.deref(&pd.completed_memory_reaper).unwrap_or_default())
+        }
         Split::MoorwingTrans => should_split(
             mem.deref(&pd.defeated_vampire_gnat_boss)
                 .unwrap_or_default(),
         ),
         // endregion: Greymoor
 
+        // region: Bellhart
+        Split::EnterBellhart => should_split(
+            (scenes.old == "Belltown_06" || scenes.old == "Belltown_07")
+                && scenes.current == "Belltown",
+        ),
+        // endregion: Bellhart
+
         // region: Shellwood
         Split::ClingGripTrans => should_split(mem.deref(&pd.has_wall_jump).unwrap_or_default()),
+        Split::EnterShellwood => should_split(
+            !scenes.old.starts_with("Shellwood") && scenes.current.starts_with("Shellwood"),
+        ),
         // endregion: Shellwood
 
         // region: TheMist

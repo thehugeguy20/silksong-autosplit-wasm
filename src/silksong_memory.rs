@@ -196,6 +196,7 @@ declare_pointers!(PlayerDataPointers {
     bell_shrine_wilds: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "bellShrineWilds"]),
     has_brolly: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "hasBrolly"]),
     defeated_song_golem: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedSongGolem"]),
+    completed_memory_reaper: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "completedMemory_reaper"]),
     bell_shrine_greymoor: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "bellShrineGreymoor"]),
     defeated_vampire_gnat_boss: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedVampireGnatBoss"]),
     has_wall_jump: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "hasWalljump"]),
