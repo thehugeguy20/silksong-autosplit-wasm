@@ -29,6 +29,8 @@ pub const QUIT_TO_MENU: &str = "Quit_To_Menu";
 pub const OPENING_SEQUENCE: &str = "Opening_Sequence";
 pub static OPENING_SCENES: [&str; 1] = [OPENING_SEQUENCE];
 
+pub static DEATH_RESPAWN_MARKER_INIT: &str = "Death Respawn Marker Init";
+
 // static NON_PLAY_SCENES: [&str; 4] = [PRE_MENU_INTRO, MENU_TITLE, QUIT_TO_MENU, OPENING_SEQUENCE];
 
 static BAD_SCENE_NAMES: [&str; 11] = [
@@ -186,6 +188,11 @@ declare_pointers!(GameManagerPointers {
 });
 
 declare_pointers!(PlayerDataPointers {
+    disable_pause: UnityPointer<3> = UnityPointer::new(
+        "GameManager",
+        0,
+        &["_instance", "playerData", "disablePause"],
+    ),
     health: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "health"]),
     defeated_moss_mother: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedMossMother"]),
     has_needle_throw: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "hasNeedleThrow"]),

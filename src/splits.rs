@@ -7,8 +7,9 @@ use ugly_widget::{
 
 use crate::{
     silksong_memory::{
-        is_menu, GameManagerPointers, Memory, PlayerDataPointers, SceneStore, MENU_TITLE,
-        NON_MENU_GAME_STATES, OPENING_SCENES,
+        is_menu, GameManagerPointers, Memory, PlayerDataPointers, SceneStore,
+        DEATH_RESPAWN_MARKER_INIT, GAME_STATE_PLAYING, MENU_TITLE, NON_MENU_GAME_STATES,
+        OPENING_SCENES,
     },
     timer::{should_split, SplitterAction},
 };
@@ -656,9 +657,6 @@ pub fn transition_splits(
 ) -> SplitterAction {
     match split {
         // region: Start, End, and Menu
-        Split::StartNewGame => {
-            should_split(OPENING_SCENES.contains(&scenes.old) && scenes.current == "Tut_01")
-        }
         Split::EndingSplit => should_split(scenes.current.starts_with("Cinematic_Ending")),
         Split::EndingA => should_split(scenes.current == "Cinematic_Ending_A"),
         Split::Menu => should_split(scenes.current == MENU_TITLE),
@@ -754,6 +752,32 @@ pub fn transition_splits(
             should_split(mem.deref(&pd.has_melody_conductor).unwrap_or_default())
         }
         // endregion: ThreefoldMelody
+
+        // else
+        _ => should_split(false),
+    }
+}
+
+pub fn transition_once_splits(
+    split: &Split,
+    scenes: &Pair<&str>,
+    mem: &Memory,
+    gm: &GameManagerPointers,
+    pd: &PlayerDataPointers,
+) -> SplitterAction {
+    match split {
+        // region: Start, End, and Menu
+        Split::StartNewGame => should_split(
+            scenes.current == "Tut_01"
+                && (OPENING_SCENES.contains(&scenes.old)
+                    || (scenes.old == MENU_TITLE
+                        && mem.read_string(&gm.entry_gate_name).unwrap_or_default()
+                            == DEATH_RESPAWN_MARKER_INIT))
+                && mem.deref(&pd.disable_pause).is_ok_and(|d: bool| !d)
+                && mem
+                    .deref(&gm.game_state)
+                    .is_ok_and(|s: i32| s == GAME_STATE_PLAYING),
+        ),
 
         // else
         _ => should_split(false),
@@ -1150,11 +1174,18 @@ pub fn splits(
 ) -> SplitterAction {
     let a1 = continuous_splits(split, mem, gm, pd).or_else(|| {
         let scenes = ss.pair();
-        if trans_now {
-            transition_splits(split, &scenes, mem, gm, pd)
+        let a2 = if !ss.split_this_transition {
+            transition_once_splits(split, &scenes, mem, gm, pd)
         } else {
             SplitterAction::Pass
-        }
+        };
+        a2.or_else(|| {
+            if trans_now {
+                transition_splits(split, &scenes, mem, gm, pd)
+            } else {
+                SplitterAction::Pass
+            }
+        })
     });
     if a1 != SplitterAction::Pass {
         ss.split_this_transition = true;
