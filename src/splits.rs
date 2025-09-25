@@ -319,7 +319,7 @@ pub enum Split {
     // endregion: NeedleUpgrade
 
     // region: Crests
-    ///  Reaper Crest (Transition)
+    /// Reaper Crest (Transition)
     /// 
     /// Splits when leaving the church with the Reaper Crest unlocked
     ReaperCrestTrans,
