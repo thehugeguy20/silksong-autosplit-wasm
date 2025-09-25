@@ -355,6 +355,12 @@
   },
   {
     "alias": null,
+    "description": "Reaper Crest (Transition)",
+    "key": "ReaperCrestTrans",
+    "tooltip": "Splits when leaving the church with the Reaper Crest unlocked"
+  },
+  {
+    "alias": null,
     "description": "Rescued Flea Hunter's March (Flea)",
     "key": "SavedFleaHuntersMarch",
     "tooltip": "Splits after rescuing flea in Ant_03"

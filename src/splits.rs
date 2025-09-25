@@ -318,6 +318,13 @@ pub enum Split {
     NeedleUpgrade4,
     // endregion: NeedleUpgrade
 
+    // region: Crests
+    ///  Reaper Crest (Transition)
+    /// 
+    /// Splits when leaving the church with the Reaper Crest unlocked
+    ReaperCrestTrans,
+    // endregion: Crests
+
     // region: FleaSpecific
     /// Rescued Flea Hunter's March (Flea)
     ///
@@ -886,6 +893,12 @@ pub fn continuous_splits(
             should_split(mem.deref(&pd.nail_upgrades).is_ok_and(|n: i32| n >= 4))
         }
         // endregion: NeedleUpgrade
+
+        // region: Crests
+        Split::ReaperCrestTrans => {
+            should_split(mem.deref(&pd.completed_memory_reaper).unwrap_or_default())
+        }
+        // endregion: Crests
 
         // region: FleaSpecific
         Split::SavedFleaHuntersMarch => {
