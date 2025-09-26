@@ -25,7 +25,14 @@ pub enum Split {
     /// Start New Game (Start)
     ///
     /// Splits when starting a new save file
+    /// from the opening cutscenes into Moss Grotto
     StartNewGame,
+    /// Act 1 Start (Start)
+    ///
+    /// Splits when starting Act 1,
+    /// either from the starting Bind,
+    /// or from revert autosave Act1Start
+    Act1Start,
     /// Credits Roll (Ending)
     ///
     /// Splits on any credits rolling, any ending
@@ -778,6 +785,9 @@ pub fn transition_splits(
 ) -> SplitterAction {
     match split {
         // region: Start, End, and Menu
+        Split::StartNewGame => {
+            should_split(OPENING_SCENES.contains(&scenes.old) && scenes.current == "Tut_01")
+        }
         Split::EndingSplit => should_split(scenes.current.starts_with("Cinematic_Ending")),
         Split::EndingA => should_split(scenes.current == "Cinematic_Ending_A"),
         Split::AnyTransition => should_split(true),
@@ -893,7 +903,7 @@ pub fn transition_once_splits(
 ) -> SplitterAction {
     match split {
         // region: Start, End, and Menu
-        Split::StartNewGame => should_split(
+        Split::Act1Start => should_split(
             scenes.current == "Tut_01"
                 && (OPENING_SCENES.contains(&scenes.old)
                     || (scenes.old == MENU_TITLE
