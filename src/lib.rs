@@ -112,10 +112,15 @@ impl AutoSplitterState {
                     || self.timer_state == TimerState::Ended =>
             {
                 // Reset
-                Settings::update_comparison_hits(&mut self.comparison_hits, &self.cumulative_hits);
-                if self.timer_state == TimerState::Ended {
-                    if let Some(pb_hits) = self.comparison_hits.last() {
-                        asr::timer::set_variable_int("pb hits", *pb_hits);
+                if settings.get_hit_counter() {
+                    Settings::update_comparison_hits(
+                        &mut self.comparison_hits,
+                        &self.cumulative_hits,
+                    );
+                    if self.timer_state == TimerState::Ended {
+                        if let Some(pb_hits) = self.comparison_hits.last() {
+                            asr::timer::set_variable_int("pb hits", *pb_hits);
+                        }
                     }
                 }
                 #[cfg(not(feature = "unstable"))]
@@ -169,12 +174,14 @@ impl AutoSplitterState {
                         self.split_index = Some(self.split_index.unwrap_or_default() + 1);
                     }
                 }
-                if let Some(index) = self.split_index {
-                    let i = index as usize;
-                    self.cumulative_hits.resize(i, self.hits);
-                    let cmp_len = self.comparison_hits.len();
-                    if i < cmp_len {
-                        self.comparison_hits.drain(0..(cmp_len - i));
+                if settings.get_hit_counter() {
+                    if let Some(index) = self.split_index {
+                        let i = index as usize;
+                        self.cumulative_hits.resize(i, self.hits);
+                        let cmp_len = self.comparison_hits.len();
+                        if i < cmp_len {
+                            self.comparison_hits.drain(0..(cmp_len - i));
+                        }
                     }
                 }
             }
@@ -448,7 +455,7 @@ async fn main() {
 async fn wait_attach_silksong(gui: &mut Settings, state: &mut AutoSplitterState) -> Process {
     retry(|| {
         gui.load_update_store_if_unchanged();
-        state.update(&gui);
+        state.update(gui);
         attach_silksong()
     })
     .await
@@ -493,10 +500,12 @@ async fn handle_splits(
                 let a = splits::splits(&split, mem, gm, pd, trans_now, ss);
                 match a {
                     SplitterAction::Reset => {
-                        Settings::update_comparison_hits(
-                            &mut state.comparison_hits,
-                            &state.cumulative_hits,
-                        );
+                        if settings.get_hit_counter() {
+                            Settings::update_comparison_hits(
+                                &mut state.comparison_hits,
+                                &state.cumulative_hits,
+                            );
+                        }
                         asr::timer::reset();
                         state.timer_state = TimerState::NotRunning;
                         state.split_index = None;

@@ -7,8 +7,9 @@ use ugly_widget::{
 
 use crate::{
     silksong_memory::{
-        is_menu, GameManagerPointers, Memory, PlayerDataPointers, SceneStore, MENU_TITLE,
-        NON_MENU_GAME_STATES, OPENING_SCENES,
+        is_menu, GameManagerPointers, Memory, PlayerDataPointers, SceneStore,
+        DEATH_RESPAWN_MARKER_INIT, GAME_STATE_PLAYING, MENU_TITLE, NON_MENU_GAME_STATES,
+        OPENING_SCENES,
     },
     timer::{should_split, SplitterAction},
 };
@@ -24,7 +25,14 @@ pub enum Split {
     /// Start New Game (Start)
     ///
     /// Splits when starting a new save file
+    /// from the opening cutscenes into Moss Grotto
     StartNewGame,
+    /// Act 1 Start (Start)
+    ///
+    /// Splits when starting Act 1,
+    /// either from the starting Bind,
+    /// or from revert autosave Act1Start
+    Act1Start,
     /// Credits Roll (Ending)
     ///
     /// Splits on any credits rolling, any ending
@@ -112,6 +120,10 @@ pub enum Split {
     // endregion: Wormways
 
     // region: FarFields
+    ///Enter Far Fields (Transition)
+    ///
+    /// Splits when entering Far Fields
+    EnterFarFields,
     /// Drifter's Cloak (Skill)
     ///
     /// Splits when obtaining Drifter's Cloak (Umbrella/Float)
@@ -426,23 +438,24 @@ pub enum Split {
     ///
     /// Splits after rescuing flea in Song_14
     SavedFleaChoralChambersCage,
-    /// Rescued Flea Underworks Explosions (Flea)
+    /// Rescued Flea Underworks Cauldron (Flea)
     ///
     /// Splits after rescuing flea in Under_21
-    SavedFleaUnderworksExplosions,
+    #[alias = "SavedFleaUnderworksExplosions"]
+    SavedFleaUnderworksCauldron,
     /// Rescued Flea Underworks Wisp Thicket (Flea)
     ///
     /// Splits after rescuing flea in Under_23
     SavedFleaUnderworksWispThicket,
-    /// Defeated Giant Flea (Flea)
+    /// Rescued Giant Flea (Flea)
     ///
     /// Splits after defeating Giant Flea
     SavedFleaGiantFlea,
-    /// Met Vog (Flea)
+    /// Rescued Vog (Flea)
     ///
     /// Splits after talking to Vog
     SavedFleaVog,
-    /// Freed Kratt (Flea)
+    /// Rescued Kratt (Flea)
     ///
     /// Splits after freeing Kratt
     SavedFleaKratt,
@@ -477,10 +490,11 @@ pub enum Split {
     ///
     /// Splits after unlocking Greymoor Bellway
     GreymoorStation,
-    /// Mount Fay (Bellway)
+    /// Slab / Mount Fay (Bellway)
     ///
-    /// Splits after unlocking Mount Fay Bellway
-    MountFayStation,
+    /// Splits after unlocking Slab / Mount Fay Bellway
+    #[alias = "MountFayStation"]
+    SlabStation,
     /// Bilewater (Bellway)
     ///
     /// Splits after unlocking Bilewater Bellway
@@ -503,7 +517,8 @@ pub enum Split {
     /// Grand Bellway (Ventrica)
     ///
     /// Splits after unlocking Grand Bellway Ventrica
-    CityBellwayTube,
+    #[alias = "CityBellwayTube"]
+    GrandBellwayTube,
     /// High Halls (Ventrica)
     ///
     /// Splits after unlocking High Halls Ventrica
@@ -609,27 +624,124 @@ pub enum Split {
     /// Nyleth's Heart (Item)
     ///
     /// Splits when you obtain Nyleth's Heart
-    CollectedHeartNyleth,
+    #[alias = "CollectedHeartNyleth"]
+    HeartNyleth,
     /// Khann's Heart (Item)
     ///
     /// Splits when you obtain Khann's Heart
-    CollectedHeartKhann,
+    #[alias = "CollectedHeartKhann"]
+    HeartKhann,
     /// Karmelita's Heart (Item)
     ///
     /// Splits when you obtain Karmelita's Heart
-    CollectedHeartKarmelita,
+    #[alias = "CollectedHeartKarmelita"]
+    HeartKarmelita,
     /// Clover Dancer's Heart (Item)
     ///
     /// Split when you obtain Conjoined Heart
-    CollectedHeartClover,
+    #[alias = "CollectedHeartClover"]
+    HeartClover,
     /// Red Memory (Event)
     ///
     /// Splits on completing Red Memory
-    CompletedRedMemory,
+    #[alias = "CompletedRedMemory"]
+    RedMemory,
     /// Pavo Bellhome Key (NPC)
     ///
     /// Splits when obtaining Bellhome Key from Pavo
     BellhouseKeyConversation,
+    /// Verdania Orbs (Event)
+    ///
+    /// Splits when you reach the required number of Verdania Orbs
+    VerdaniaOrbsCollected,
+    /// Forebrothers (Boss)
+    ///
+    /// Splits after defeating the Forebrothers
+    Forebrothers,
+    /// Groal (Boss)
+    ///
+    /// Splits after defeating Groal
+    Groal,
+    /// Conchflies 1 (Boss)
+    ///
+    /// Splits after defeating Conchflies 1
+    Conchflies1,
+    ///  Savage Beastfly 1 (Boss)
+    ///
+    /// Splits after defeating the Beastfly in the Chapel
+    SavageBeastfly1,
+    /// Savage Beastfly 2 (Boss))
+    ///
+    /// Splits after completing the Beastfly in Far Fields
+    SavageBeastfly2,
+    /// Caravan Troupe Greymoor (Event)
+    ///
+    /// Splits when the Caravan Troupe moves to Greymoor
+    CaravanTroupeGreymoor,
+    /// Caravan Troupe Fleatopia (Event)
+    ///
+    /// Splits when the Caravan Troupe moves to Fleatopia
+    CaravanTroupeFleatopia,
+    /// Scrounge Relic Sold (Event)
+    ///
+    /// Splits after selling the first relic to Scrounge
+    SoldRelic,
+    /// Collected WhiteWard Key (Item)
+    ///
+    /// Splits when you collect the WhiteWard Key
+    CollectedWhiteWardKey,
+    /// Pavo Time Passed (Event)
+    ///
+    /// Splits after meeting the Belltown Greeter and time has passed
+    PavoTimePassed,
+    /// Songclave Bell (Event)
+    ///
+    /// Splits when ringing the Songclave Bell Shrine
+    SongclaveBell,
+    /// Voltvyrm (Boss)
+    ///
+    /// Splits after defeating Voltvyrm
+    Voltvyrm,
+    /// Skull Tyrant (Boss)
+    ///
+    /// Splits after defeating the Skull Tyrant
+    SkullTyrant1,
+    /// Sherma Returned(NPC)
+    ///
+    /// Splits when Sherma is rescued and time passes
+    ShermaReturned,
+    /// Jubilana Rescued Memorium (Event)
+    ///
+    /// Splits after saving the Jubilana in Memorium
+    JubilanaRescuedMemorium,
+    /// Jubilana Rescued Choral Chambers (Event)
+    ///
+    /// Splits after saving the Jubilana in Choral Chambers
+    JubilanaRescuedChoralChambers,
+    /// Silk and Soul Offered (Event)
+    ///
+    /// Splits when the Caretaker offers the Silk and Soul quest
+    SilkAndSoulOffered,
+    /// Soul Snare Ready (Event)
+    ///
+    /// Splits when the Soul Snare becomes ready
+    SoulSnareReady,
+    /// Seth (Boss)
+    ///
+    /// Splits after defeating Seth
+    Seth,
+    /// Completed Abyss Escape (Event)
+    ///
+    /// Splits after completing the Abyss Escape
+    AbyssEscape,
+    /// Ballow Moved (Event)
+    ///
+    /// Splits when Ballow moves to the Diving Bell
+    BallowMoved,
+    /// Act 3 Start (Event)
+    ///
+    /// Splits upon entering Act 3
+    Act3Started,
     // endregion: Misc TE
 }
 
@@ -647,6 +759,23 @@ impl StoreWidget for Split {
     }
 }
 
+pub fn menu_splits(
+    split: &Split,
+    scenes: &Pair<&str>,
+    _mem: &Memory,
+    _gm: &GameManagerPointers,
+    _pd: &PlayerDataPointers,
+) -> SplitterAction {
+    match split {
+        // region: Start, End, and Menu
+        Split::Menu => should_split(scenes.current == MENU_TITLE),
+        // endregion: Start, End, and Menu
+
+        // else
+        _ => should_split(false),
+    }
+}
+
 pub fn transition_splits(
     split: &Split,
     scenes: &Pair<&str>,
@@ -661,10 +790,7 @@ pub fn transition_splits(
         }
         Split::EndingSplit => should_split(scenes.current.starts_with("Cinematic_Ending")),
         Split::EndingA => should_split(scenes.current == "Cinematic_Ending_A"),
-        Split::Menu => should_split(scenes.current == MENU_TITLE),
-        Split::AnyTransition => should_split(
-            scenes.current != scenes.old && !(is_menu(scenes.old) || is_menu(scenes.current)),
-        ),
+        Split::AnyTransition => should_split(true),
         // endregion: Start, End, and Menu
 
         // region: MossLands
@@ -693,6 +819,9 @@ pub fn transition_splits(
         // endregion: Wormways
 
         // region: FarFields
+        Split::EnterFarFields => should_split(
+            !scenes.old.starts_with("Bone_East") && scenes.current.starts_with("Bone_East"),
+        ),
         Split::DriftersCloakTrans => should_split(mem.deref(&pd.has_brolly).unwrap_or_default()),
         // endregion: FarFields
 
@@ -754,6 +883,37 @@ pub fn transition_splits(
             should_split(mem.deref(&pd.has_melody_conductor).unwrap_or_default())
         }
         // endregion: ThreefoldMelody
+
+        // region: Crests
+        Split::ReaperCrestTrans => {
+            should_split(mem.deref(&pd.completed_memory_reaper).unwrap_or_default())
+        }
+        // endregion: Crests
+        // else
+        _ => should_split(false),
+    }
+}
+
+pub fn transition_once_splits(
+    split: &Split,
+    scenes: &Pair<&str>,
+    mem: &Memory,
+    gm: &GameManagerPointers,
+    pd: &PlayerDataPointers,
+) -> SplitterAction {
+    match split {
+        // region: Start, End, and Menu
+        Split::Act1Start => should_split(
+            scenes.current == "Tut_01"
+                && (OPENING_SCENES.contains(&scenes.old)
+                    || (scenes.old == MENU_TITLE
+                        && mem.read_string(&gm.entry_gate_name).unwrap_or_default()
+                            == DEATH_RESPAWN_MARKER_INIT))
+                && mem.deref(&pd.disable_pause).is_ok_and(|d: bool| !d)
+                && mem
+                    .deref(&gm.game_state)
+                    .is_ok_and(|s: i32| s == GAME_STATE_PLAYING),
+        ),
 
         // else
         _ => should_split(false),
@@ -977,7 +1137,7 @@ pub fn continuous_splits(
         Split::SavedFleaChoralChambersCage => {
             should_split(mem.deref(&pd.savedflea_song_14).unwrap_or_default())
         }
-        Split::SavedFleaUnderworksExplosions => {
+        Split::SavedFleaUnderworksCauldron => {
             should_split(mem.deref(&pd.savedflea_under_21).unwrap_or_default())
         }
         Split::SavedFleaUnderworksWispThicket => {
@@ -1018,7 +1178,7 @@ pub fn continuous_splits(
         Split::GreymoorStation => {
             should_split(mem.deref(&pd.unlocked_greymoor_station).unwrap_or_default())
         }
-        Split::MountFayStation => {
+        Split::SlabStation => {
             should_split(mem.deref(&pd.unlocked_peak_station).unwrap_or_default())
         }
         Split::BilewaterStation => {
@@ -1037,7 +1197,7 @@ pub fn continuous_splits(
         Split::UnderworksTube => {
             should_split(mem.deref(&pd.unlocked_under_tube).unwrap_or_default())
         }
-        Split::CityBellwayTube => should_split(
+        Split::GrandBellwayTube => should_split(
             mem.deref(&pd.unlocked_city_bellway_tube)
                 .unwrap_or_default(),
         ),
@@ -1114,25 +1274,86 @@ pub fn continuous_splits(
         }
         Split::FaydownCloak => should_split(mem.deref(&pd.has_double_jump).unwrap_or_default()),
         Split::SilkSoar => should_split(mem.deref(&pd.has_super_jump).unwrap_or_default()),
-        Split::CollectedHeartNyleth => {
+        Split::HeartNyleth => {
             should_split(mem.deref(&pd.collected_heart_flower).unwrap_or_default())
         }
-        Split::CollectedHeartKhann => {
-            should_split(mem.deref(&pd.collected_heart_coral).unwrap_or_default())
-        }
-        Split::CollectedHeartKarmelita => {
+        Split::HeartKhann => should_split(mem.deref(&pd.collected_heart_coral).unwrap_or_default()),
+        Split::HeartKarmelita => {
             should_split(mem.deref(&pd.collected_heart_hunter).unwrap_or_default())
         }
-        Split::CollectedHeartClover => {
+        Split::HeartClover => {
             should_split(mem.deref(&pd.collected_heart_clover).unwrap_or_default())
         }
-        Split::CompletedRedMemory => {
-            should_split(mem.deref(&pd.completed_red_memory).unwrap_or_default())
-        }
+        Split::RedMemory => should_split(mem.deref(&pd.completed_red_memory).unwrap_or_default()),
         Split::BellhouseKeyConversation => should_split(
             mem.deref(&pd.belltown_greeter_house_full_dlg)
                 .unwrap_or_default(),
         ),
+        Split::VerdaniaOrbsCollected => should_split(
+            mem.deref(&pd.clover_memory_orbs_collected_target)
+                .unwrap_or_default(),
+        ),
+        Split::Forebrothers => {
+            should_split(mem.deref(&pd.defeated_dock_foremen).unwrap_or_default())
+        }
+        Split::Groal => should_split(mem.deref(&pd.defeated_swamp_shaman).unwrap_or_default()),
+        Split::SavageBeastfly1 => {
+            should_split(mem.deref(&pd.defeated_bone_flyer_giant).unwrap_or_default())
+        }
+        Split::Conchflies1 => {
+            should_split(mem.deref(&pd.defeated_coral_drillers).unwrap_or_default())
+        }
+        Split::SavageBeastfly2 => should_split(
+            mem.deref(&pd.defeated_bone_flyer_giant_golem_scene)
+                .unwrap_or_default(),
+        ),
+        Split::CaravanTroupeGreymoor => should_split(
+            mem.deref(&pd.caravan_troupe_location)
+                .is_ok_and(|n: i32| n >= 1),
+        ),
+        Split::CaravanTroupeFleatopia => should_split(
+            mem.deref(&pd.caravan_troupe_location)
+                .is_ok_and(|n: i32| n >= 3),
+        ),
+        Split::SoldRelic => should_split(
+            mem.deref(&pd.belltown_relic_dealer_gave_relic)
+                .unwrap_or_default(),
+        ),
+        Split::CollectedWhiteWardKey => {
+            should_split(mem.deref(&pd.collected_ward_key).unwrap_or_default())
+        }
+        Split::PavoTimePassed => should_split(
+            mem.deref(&pd.belltown_greeter_met_time_passed)
+                .unwrap_or_default(),
+        ),
+        Split::SongclaveBell => {
+            should_split(mem.deref(&pd.bell_shrine_enclave).unwrap_or_default())
+        }
+        Split::Voltvyrm => should_split(mem.deref(&pd.defeated_zap_core_enemy).unwrap_or_default()),
+        Split::SkullTyrant1 => should_split(mem.deref(&pd.skull_king_defeated).unwrap_or_default()),
+        Split::ShermaReturned => {
+            should_split(mem.deref(&pd.sherma_healer_active).unwrap_or_default())
+        }
+        Split::JubilanaRescuedMemorium => {
+            should_split(mem.deref(&pd.enclave_merchant_saved).unwrap_or_default())
+        }
+        Split::JubilanaRescuedChoralChambers => {
+            should_split(mem.deref(&pd.city_merchant_saved).unwrap_or_default())
+        }
+        Split::SilkAndSoulOffered => should_split(
+            mem.deref(&pd.caretaker_offered_snare_quest)
+                .unwrap_or_default(),
+        ),
+        Split::SoulSnareReady => should_split(mem.deref(&pd.soul_snare_ready).unwrap_or_default()),
+        Split::Seth => should_split(mem.deref(&pd.defeated_seth).unwrap_or_default()),
+        Split::AbyssEscape => {
+            should_split(mem.deref(&pd.completed_abyss_ascent).unwrap_or_default())
+        }
+        Split::BallowMoved => should_split(
+            mem.deref(&pd.ballow_moved_to_diving_bell)
+                .unwrap_or_default(),
+        ),
+        Split::Act3Started => should_split(mem.deref(&pd.black_thread_world).unwrap_or_default()),
         // endregion: MiscTE
 
         // else
@@ -1150,11 +1371,22 @@ pub fn splits(
 ) -> SplitterAction {
     let a1 = continuous_splits(split, mem, gm, pd).or_else(|| {
         let scenes = ss.pair();
-        if trans_now {
-            transition_splits(split, &scenes, mem, gm, pd)
+        let a2 = if !ss.split_this_transition {
+            transition_once_splits(split, &scenes, mem, gm, pd)
         } else {
             SplitterAction::Pass
-        }
+        };
+        a2.or_else(|| {
+            if trans_now {
+                if is_menu(scenes.old) || is_menu(scenes.current) {
+                    menu_splits(split, &scenes, mem, gm, pd)
+                } else {
+                    transition_splits(split, &scenes, mem, gm, pd)
+                }
+            } else {
+                SplitterAction::Pass
+            }
+        })
     });
     if a1 != SplitterAction::Pass {
         ss.split_this_transition = true;

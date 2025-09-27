@@ -24,9 +24,11 @@ jobs:
           - label: Stable
             postfix: _stable
             features: '""'
+            sleep: 0
           - label: Unstable
             postfix: _unstable
             features: '"unstable"'
+            sleep: 10
     steps:
       - name: Checkout Commit
         uses: actions/checkout@v4
@@ -40,11 +42,13 @@ jobs:
       - name: Build
         run: |
           cargo b --release --locked --features ${{matrix.features}}
+          ls -lh target/wasm32-unknown-unknown/release/silksong_autosplit_wasm.wasm
 
       - name: Prepare Release
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           cp target/wasm32-unknown-unknown/release/silksong_autosplit_wasm.wasm silksong_autosplit_wasm${{matrix.postfix}}.wasm
-          ls -lh silksong_autosplit_wasm${{matrix.postfix}}.wasm
+          sleep ${{matrix.sleep}}
 
       - name: Release
         if: startsWith(github.ref, 'refs/tags/')

@@ -29,6 +29,8 @@ pub const QUIT_TO_MENU: &str = "Quit_To_Menu";
 pub const OPENING_SEQUENCE: &str = "Opening_Sequence";
 pub static OPENING_SCENES: [&str; 1] = [OPENING_SEQUENCE];
 
+pub static DEATH_RESPAWN_MARKER_INIT: &str = "Death Respawn Marker Init";
+
 // static NON_PLAY_SCENES: [&str; 4] = [PRE_MENU_INTRO, MENU_TITLE, QUIT_TO_MENU, OPENING_SEQUENCE];
 
 static BAD_SCENE_NAMES: [&str; 11] = [
@@ -186,6 +188,11 @@ declare_pointers!(GameManagerPointers {
 });
 
 declare_pointers!(PlayerDataPointers {
+    disable_pause: UnityPointer<3> = UnityPointer::new(
+        "GameManager",
+        0,
+        &["_instance", "playerData", "disablePause"],
+    ),
     health: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "health"]),
     defeated_moss_mother: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedMossMother"]),
     has_needle_throw: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "hasNeedleThrow"]),
@@ -295,6 +302,29 @@ declare_pointers!(PlayerDataPointers {
     collected_heart_clover: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "CollectedHeartClover"]),
     completed_red_memory: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "CompletedRedMemory"]),
     belltown_greeter_house_full_dlg: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "BelltownGreeterHouseFullDlg"]),
+    clover_memory_orbs_collected_target: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "CloverMemoryOrbsCollectedTarget"]),
+    defeated_dock_foremen: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedDockForemen"]),
+    defeated_swamp_shaman: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "DefeatedSwampShaman"]),
+    defeated_bone_flyer_giant: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedBoneFlyerGiant"]),
+    defeated_bone_flyer_giant_golem_scene: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedBoneFlyerGiantGolemScene"]),
+    caravan_troupe_location: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "CaravanTroupeLocation"]),
+    belltown_relic_dealer_gave_relic: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "BelltownRelicDealerGaveRelic"]),
+    collected_ward_key: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "CollectedWardKey"]),
+    belltown_greeter_met_time_passed: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "BelltownGreeterMetTimepassed"]),
+    bell_shrine_enclave: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "bellShrineEnclave"]),
+    defeated_zap_core_enemy: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedZapCoreEnemy"]),
+    skull_king_defeated: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "skullKingDefeated"]),
+    sherma_healer_active: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "ShermaHealerActive"]),
+    city_merchant_saved: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "cityMerchantSaved"]),
+    enclave_merchant_saved: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "enclaveMerchantSaved"]),
+    caretaker_offered_snare_quest: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "CaretakerOfferedSnareQuest"]),
+    soul_snare_ready: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "soulSnareReady"]),
+    defeated_seth: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedSeth"]),
+    completed_abyss_ascent: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "CompletedAbyssAscent"]),
+    ballow_moved_to_diving_bell: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "BallowMovedToDivingBell"]),
+    black_thread_world: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "blackThreadWorld"]),
+    defeated_coral_drillers: UnityPointer<3> = UnityPointer::new("GameManager", 0, &["_instance", "playerData", "defeatedCoralDrillers"]),
+
 });
 
 // --------------------------------------------------------
